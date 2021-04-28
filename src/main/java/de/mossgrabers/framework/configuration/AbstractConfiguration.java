@@ -1022,13 +1022,13 @@ public abstract class AbstractConfiguration implements Configuration
      */
     protected void activateFlipSessionSetting (final ISettingsUI settingsUI)
     {
-        this.flipSessionSetting = settingsUI.getEnumSetting ("Flip Session", CATEGORY_SESSION, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
+//        this.flipSessionSetting = settingsUI.getEnumSetting ("Flip Session", CATEGORY_SESSION, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
 //        this.flipSessionSetting.addValueObserver (value -> {
 //            this.flipSession = true;//"On".equals (value);
 //            this.notifyObservers (FLIP_SESSION);
 //        });
 
-        this.isSettingActive.add (FLIP_SESSION);
+//        this.isSettingActive.add (FLIP_SESSION);
     }
 
 
@@ -1141,13 +1141,13 @@ public abstract class AbstractConfiguration implements Configuration
      */
     protected void activateFlipRecordSetting (final ISettingsUI settingsUI)
     {
-        final IEnumSetting flipRecordSetting = settingsUI.getEnumSetting ("Flip arranger and clip record / automation", CATEGORY_TRANSPORT, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
-        flipRecordSetting.addValueObserver (value -> {
-            this.flipRecord = "On".equals (value);
-            this.notifyObservers (FLIP_RECORD);
-        });
-
-        this.isSettingActive.add (FLIP_RECORD);
+//        final IEnumSetting flipRecordSetting = settingsUI.getEnumSetting ("Flip arranger and clip record / automation", CATEGORY_TRANSPORT, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
+//        flipRecordSetting.addValueObserver (value -> {
+//            this.flipRecord = "On".equals (value);
+//            this.notifyObservers (FLIP_RECORD);
+//        });
+//
+//        this.isSettingActive.add (FLIP_RECORD);
     }
 
 
@@ -1462,17 +1462,17 @@ public abstract class AbstractConfiguration implements Configuration
      */
     protected void activateShiftedRecordButtonSetting (final ISettingsUI settingsUI)
     {
-        final IEnumSetting shiftedRecordButtonSetting = settingsUI.getEnumSetting ("Shift + Record button", CATEGORY_TRANSPORT, RECORD_OPTIONS, RECORD_OPTIONS[0]);
-        shiftedRecordButtonSetting.addValueObserver (value -> {
-            for (int i = 0; i < RECORD_OPTIONS.length; i++)
-            {
-                if (RECORD_OPTIONS[i].equals (value))
-                    this.shiftedRecordButtonFunction = RecordFunction.values ()[i];
-            }
-            this.notifyObservers (SHIFTED_RECORD_BUTTON_FUNCTION);
-        });
-
-        this.isSettingActive.add (SHIFTED_RECORD_BUTTON_FUNCTION);
+//        final IEnumSetting shiftedRecordButtonSetting = settingsUI.getEnumSetting ("Shift + Record button", CATEGORY_TRANSPORT, RECORD_OPTIONS, RECORD_OPTIONS[0]);
+//        shiftedRecordButtonSetting.addValueObserver (value -> {
+//            for (int i = 0; i < RECORD_OPTIONS.length; i++)
+//            {
+//                if (RECORD_OPTIONS[i].equals (value))
+//                    this.shiftedRecordButtonFunction = RecordFunction.values ()[i];
+//            }
+//            this.notifyObservers (SHIFTED_RECORD_BUTTON_FUNCTION);
+//        });
+//
+//        this.isSettingActive.add (SHIFTED_RECORD_BUTTON_FUNCTION);
     }
 
 

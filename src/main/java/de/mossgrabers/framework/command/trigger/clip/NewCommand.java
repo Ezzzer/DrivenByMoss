@@ -8,12 +8,14 @@ import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.data.ICursorTrack;
 import de.mossgrabers.framework.daw.data.ISlot;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISlotBank;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -56,27 +58,46 @@ public class NewCommand<S extends IControlSurface<C>, C extends Configuration> e
     }
 
 
+    static AtomicBoolean retry = new AtomicBoolean(false);
+
     private void handleExecute (final boolean enableOverdub)
     {
-        final ITrack cursorTrack = this.model.getCursorTrack ();
+        final ICursorTrack cursorTrack = this.model.getCursorTrack ();
         if (!cursorTrack.doesExist ())
         {
             this.surface.getDisplay ().notify ("Please select an Instrument track first.");
             return;
         }
 
-        final ISlotBank slotBank = cursorTrack.getSlotBank ();
-        final Optional<ISlot> selectedSlot = slotBank.getSelectedItem ();
-        final int slotIndex = selectedSlot.isEmpty () ? 0 : selectedSlot.get ().getIndex ();
-        final Optional<ISlot> slot = slotBank.getEmptySlot (slotIndex);
-        if (slot.isEmpty ())
-        {
-            this.surface.getDisplay ().notify ("No empty slot in the current page. Please scroll down.");
-            return;
+        Optional<ISlot> slot = tryFindNewSlot(cursorTrack);
+        if (slot.isEmpty ()){
+//            if( retry.compareAndSet(false,true)) {
+//                model.getApplication().arrowKeyRight();
+//                surface.scheduleTask(() -> {
+//                    handleExecute(enableOverdub);
+//                    retry.set(false);
+//                }, 200);
+//                return;
+//            }else{
+                slot = tryFindNewSlot(cursorTrack);
+                if (slot.isEmpty ()) {
+                        this.surface.getDisplay().notify("No empty slot in the current page. Please scroll down.");
+                        return;
+//                }
+            }
         }
 
         final int lengthInBeats = this.getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
         this.model.createNoteClip (cursorTrack, slot.get (), lengthInBeats, enableOverdub);
+
+    }
+
+    private Optional<ISlot> tryFindNewSlot(ITrack cursorTrack) {
+        ISlotBank slotBank = cursorTrack.getSlotBank ();
+        Optional<ISlot> selectedSlot = slotBank.getSelectedItem ();
+        int slotIndex = selectedSlot.isEmpty () ? 0 : selectedSlot.get ().getIndex ();
+        Optional<ISlot> slot = slotBank.getEmptySlot (slotIndex);
+        return slot;
     }
 
 

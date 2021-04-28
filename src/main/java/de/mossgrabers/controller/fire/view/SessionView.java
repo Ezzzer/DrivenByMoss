@@ -151,7 +151,7 @@ public class SessionView extends AbstractSessionView<FireControlSurface, FireCon
         }
 
         final FireConfiguration configuration = this.surface.getConfiguration ();
-        if (isDeleteButtonCombination() && configuration.isDeleteModeActive ())
+        if (this.isButtonCombination (ButtonID.DELETE) && configuration.isDeleteModeActive ())
             configuration.toggleDeleteModeActive ();
         else if (this.isButtonCombination (ButtonID.DUPLICATE) && configuration.isDuplicateModeActive () && (!slot.doesExist () || !slot.hasContent ()))
             configuration.toggleDuplicateModeActive ();
@@ -170,7 +170,7 @@ public class SessionView extends AbstractSessionView<FireControlSurface, FireCon
             return true;
 
         final FireConfiguration configuration = this.surface.getConfiguration ();
-        if (isaButtonIdDelete(buttonID) && configuration.isDeleteModeActive ())
+        if (buttonID == ButtonID.DELETE && configuration.isDeleteModeActive ())
             return true;
 
         return buttonID == ButtonID.DUPLICATE && configuration.isDuplicateModeActive ();

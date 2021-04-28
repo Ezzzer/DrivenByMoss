@@ -54,11 +54,10 @@ public class SlotBankImpl extends AbstractItemBankImpl<ClipLauncherSlotBank, ISl
     @Override
     public Optional<ISlot> getEmptySlot (final int startFrom)
     {
-        final int start = startFrom >= 0 ? startFrom : 0;
+        final int start = Math.max(startFrom, 0);
         final int size = this.items.size ();
-        for (int i = 0; i < size; i++)
-        {
-            final ISlot item = this.items.get ((start + i) % size);
+        if(startFrom < size-1){
+            final ISlot item = this.items.get (start + 1);
             if (!item.hasContent ())
                 return Optional.of (item);
         }

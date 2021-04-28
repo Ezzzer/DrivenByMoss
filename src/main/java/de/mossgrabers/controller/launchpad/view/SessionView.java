@@ -252,7 +252,7 @@ public class SessionView extends AbstractSessionView<LaunchpadControlSurface, La
 
         if (this.isButtonCombination (ButtonID.DELETE) && this.configuration.isDeleteModeActive ())
             this.configuration.toggleDeleteModeActive ();
-        else if ((this.isButtonCombination (ButtonID.DUPLICATE) ||this.isButtonCombination (ButtonID.DUPLICATE) ) && this.configuration.isDuplicateModeActive () && (!slot.doesExist () || !slot.hasContent ()))
+        else if (this.isButtonCombination (ButtonID.DUPLICATE) && this.configuration.isDuplicateModeActive () && (!slot.doesExist () || !slot.hasContent ()))
             this.configuration.toggleDuplicateModeActive ();
 
         return result;
