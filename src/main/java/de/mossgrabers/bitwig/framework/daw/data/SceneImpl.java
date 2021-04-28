@@ -123,7 +123,8 @@ public class SceneImpl extends AbstractItemImpl implements IScene
     @Override
     public void duplicate ()
     {
-        this.scene.nextSceneInsertionPoint ().copySlotsOrScenes (this.scene);
+        //super.  getApplication ().duplicate ();
+        this.scene.  nextSceneInsertionPoint().copySlotsOrScenes (this.scene);
     }
 
 

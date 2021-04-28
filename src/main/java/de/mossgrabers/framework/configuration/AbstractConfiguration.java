@@ -361,7 +361,7 @@ public abstract class AbstractConfiguration implements Configuration
     private String                                    scaleLayout                 = "4th ^";
     private boolean                                   enableVUMeters              = false;
     private BehaviorOnStop                            behaviorOnStop              = BehaviorOnStop.MOVE_PLAY_CURSOR;
-    protected boolean                                 flipSession                 = false;
+    protected boolean                                 flipSession                 = true;
     private boolean                                   selectClipOnLaunch          = true;
     private boolean                                   drawRecordStripe            = true;
     private int                                       convertAftertouch           = 0;
@@ -642,7 +642,7 @@ public abstract class AbstractConfiguration implements Configuration
     @Override
     public boolean isFlipSession ()
     {
-        return this.flipSession;
+        return true;//this.flipSession;
     }
 
 
@@ -1023,10 +1023,10 @@ public abstract class AbstractConfiguration implements Configuration
     protected void activateFlipSessionSetting (final ISettingsUI settingsUI)
     {
         this.flipSessionSetting = settingsUI.getEnumSetting ("Flip Session", CATEGORY_SESSION, ON_OFF_OPTIONS, ON_OFF_OPTIONS[0]);
-        this.flipSessionSetting.addValueObserver (value -> {
-            this.flipSession = "On".equals (value);
-            this.notifyObservers (FLIP_SESSION);
-        });
+//        this.flipSessionSetting.addValueObserver (value -> {
+//            this.flipSession = true;//"On".equals (value);
+//            this.notifyObservers (FLIP_SESSION);
+//        });
 
         this.isSettingActive.add (FLIP_SESSION);
     }

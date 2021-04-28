@@ -83,6 +83,7 @@ public class PlayCommand<S extends IControlSurface<C>, C extends Configuration> 
                 this.doubleClickTest ();
                 break;
         }
+        this.mvHelper.delayDisplay(() -> this.model.getTransport().isPlaying() ? "Play" : "Stop");
     }
 
 

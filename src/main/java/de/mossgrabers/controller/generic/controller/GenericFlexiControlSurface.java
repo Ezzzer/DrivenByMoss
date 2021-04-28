@@ -36,7 +36,7 @@ import java.util.Optional;
  */
 public class GenericFlexiControlSurface extends AbstractControlSurface<GenericFlexiConfiguration>
 {
-    private static final FileFilter []                    FILE_FILTERS    =
+    private static final FileFilter[]                    FILE_FILTERS    =
     {
         new FileFilter ("Configuration", "properties"),
         new FileFilter ("All files", "*")

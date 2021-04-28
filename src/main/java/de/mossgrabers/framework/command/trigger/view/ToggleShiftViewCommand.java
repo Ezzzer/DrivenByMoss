@@ -18,36 +18,38 @@ import de.mossgrabers.framework.view.Views;
  *
  * @param <S> The type of the control surface
  * @param <C> The type of the configuration
- *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ToggleShiftViewCommand<S extends IControlSurface<C>, C extends Configuration> extends AbstractTriggerCommand<S, C>
-{
+public class ToggleShiftViewCommand<S extends IControlSurface<C>, C extends Configuration> extends AbstractTriggerCommand<S, C> {
     /**
      * Constructor.
      *
-     * @param model The model
+     * @param model   The model
      * @param surface The surface
      */
-    public ToggleShiftViewCommand (final IModel model, final S surface)
-    {
-        super (model, surface);
+    public ToggleShiftViewCommand(final IModel model, final S surface) {
+        super(model, surface);
     }
 
+    /**
+     * {@inheritDoc}
+     */
 
-    /** {@inheritDoc} */
     @Override
-    public void execute (final ButtonEvent event, final int velocity)
-    {
+    public void execute(final ButtonEvent event, final int velocity) {
+        exitOrEnterShiftView(event, this.surface.getViewManager());
+    }
+
+    protected void exitOrEnterShiftView(ButtonEvent event, ViewManager viewManager) {
+
         if (event == ButtonEvent.LONG)
             return;
+        if (this.surface.isShiftPressed() && !viewManager.isActive(Views.SHIFT)) {
+            viewManager.setTemporary(Views.SHIFT);
+        } else if (event == ButtonEvent.UP && viewManager.isActive(Views.SHIFT)) {
+            viewManager.restore();
+        }
 
-        final ViewManager viewManager = this.surface.getViewManager ();
-        if (event == ButtonEvent.DOWN && !viewManager.isActive (Views.SHIFT))
-            viewManager.setTemporary (Views.SHIFT);
-        else if (event == ButtonEvent.UP && viewManager.isActive (Views.SHIFT))
-            viewManager.restore ();
-
-        this.surface.setKnobSensitivityIsSlow (this.surface.isShiftPressed ());
+        this.surface.setKnobSensitivityIsSlow(this.surface.isShiftPressed());
     }
 }

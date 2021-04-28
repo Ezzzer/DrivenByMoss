@@ -145,7 +145,9 @@ public enum Modes
     /** A mode that does nothing. */
     DUMMY,
     /** A mode to select options for adding a track. */
-    ADD_TRACK;
+    ADD_TRACK,
+    // stop arrangement
+    STOP_ARR;
 
 
     /** The name of the Track mode. */

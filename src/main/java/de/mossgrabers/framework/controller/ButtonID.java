@@ -628,9 +628,18 @@ public enum ButtonID
     PAD86,
     /** Pad 87. */
     PAD87,
-    /** Pad 88. */
-    PAD88;
-
+    /**
+     * Pad 88.
+     */
+    PAD88,
+    /**
+     * pad 27.
+     */
+    STOP_ARR,
+    CLIP_REC_AUTOMATION,
+    ARR_REC_AUTOMATION,
+    REC_QUANTIZE,
+    ARR_OVERDUB;
 
     /**
      * Get an offset button ID, e.g. to get F4 set F1 and 3 as parameters.

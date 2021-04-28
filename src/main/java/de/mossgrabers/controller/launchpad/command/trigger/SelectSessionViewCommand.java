@@ -88,9 +88,9 @@ public class SelectSessionViewCommand extends AbstractTriggerCommand<LaunchpadCo
                     }
 
                     // Flip clips
-                    final boolean flipped = !configuration.isFlipSession ();
-                    configuration.setFlipSession (flipped);
-                    this.notifyViewName (Views.SESSION, false, flipped);
+// ezer no flips                    final boolean flipped = !configuration.isFlipSession ();
+//                    configuration.setFlipSession (flipped);
+//                    this.notifyViewName (Views.SESSION, false, flipped);
                     return;
                 }
 

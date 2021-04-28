@@ -29,6 +29,7 @@ public class FeatureGroupManager<E extends Enum<E>, F extends IFeatureGroup>
     protected E                                       previousID        = null;
     protected E                                       temporaryID       = null;
     protected E                                       defaultID         = null;
+    protected E                                       afterRestoreID    = null;
 
     private final List<FeatureGroupChangeListener<E>> changeListeners   = new ArrayList<> ();
     private final List<FeatureGroupManager<E, F>>     connectedManagers = new ArrayList<> ();
@@ -346,6 +347,13 @@ public class FeatureGroupManager<E extends Enum<E>, F extends IFeatureGroup>
 
         if (oldID != null)
             this.notifyObservers (oldID, this.activeID);
+        if(afterRestoreID!=null){
+            E temp = afterRestoreID ;
+            afterRestoreID = null;
+            if(!activeID.equals(temp)) {
+                setActive(temp);
+            }
+        }
     }
 
 
@@ -381,5 +389,9 @@ public class FeatureGroupManager<E extends Enum<E>, F extends IFeatureGroup>
     protected void notifyObservers (final E oldFeatureGroup, final E newFeatureGroup)
     {
         this.changeListeners.forEach (l -> l.call (oldFeatureGroup, newFeatureGroup));
+    }
+
+    public void  setRestoreView(E viewId) {
+        afterRestoreID = viewId;
     }
 }

@@ -12,9 +12,10 @@ import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.grid.IPadGrid;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITransport;
+import de.mossgrabers.framework.daw.constants.RecordQuantization;
 import de.mossgrabers.framework.daw.constants.Resolution;
+import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.midi.INoteRepeat;
-import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.featuregroup.AbstractView;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -40,8 +41,53 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
         super ("Shift", surface, model);
     }
 
+    final int CLIP_REC_AUTOMATION = 99;
+    final int STOP = 91;
+    final int PLAY = 83;
+    final int RECORD = 75;
+    final int ARR_OVERDUB = 67;
 
-    /** {@inheritDoc} */
+    final int NEW = 98;
+    final int DOUBLE = 90;
+    final int DUPLICATE = 82;
+    final int ARR_REC_AUTOMATION = 74;
+
+    final int DELETE = 97;
+    final int UNDO = 89;
+    final int REDO = 81;
+
+    final int TAP_TEMPO = 96;
+    final int METRONOME = 88;
+    final int TOGGLE_ACCENT = 80;
+
+    final int QUANTIZE = 95;
+    final int REC_QUANTIZE = 87;
+    final int ARR_LOOP = 79;
+
+    final int ADD_TRACK_INST = 94;
+    final int ADD_TRACK_AUDIO = 86;
+    final int NOTE_REPEAT = 78;
+
+    final int ADD_TRACK_EFFECT = 93;
+
+    final int NEW_CLIP_LENGTH = 36;
+   // final int REC_ARM = 45;
+
+    /* the grid
+     * 92 - 99
+     * 84 - 91
+     * 76 - 83
+     * 68 - 75
+     * 60 - 67
+     * 52 - 59
+     * 44 - 51
+     * 36 - 43
+     * */
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void drawGrid ()
     {
@@ -50,49 +96,52 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
 
         final ITransport transport = this.model.getTransport ();
 
+        for (int i = 36; i < 100; i++)
+            padGrid.light(i, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+
         // Add tracks
-        padGrid.light (97, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN);
-        padGrid.light (98, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
-        padGrid.light (99, LaunchpadColorManager.LAUNCHPAD_COLOR_TURQUOISE_CYAN);
+        padGrid.light(ADD_TRACK_INST, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN);
+        padGrid.light(ADD_TRACK_AUDIO, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
+        padGrid.light(ADD_TRACK_EFFECT, LaunchpadColorManager.LAUNCHPAD_COLOR_TURQUOISE_CYAN);
 
         // Accent on/off
-        padGrid.light (91, configuration.isAccentActive () ? LaunchpadColorManager.LAUNCHPAD_COLOR_YELLOW_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_YELLOW_LO);
+        padGrid.light(TOGGLE_ACCENT, configuration.isAccentActive() ? LaunchpadColorManager.LAUNCHPAD_COLOR_YELLOW_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_YELLOW_LO);
 
         // New clip length
         final int clipLengthIndex = this.surface.getConfiguration ().getNewClipLength ();
         for (int i = 0; i < 8; i++)
-            padGrid.light (36 + i, i == clipLengthIndex ? LaunchpadColorManager.LAUNCHPAD_COLOR_WHITE : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO);
+            padGrid.light(NEW_CLIP_LENGTH + i, i == clipLengthIndex ? LaunchpadColorManager.LAUNCHPAD_COLOR_WHITE : LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_LO);
 
         // Note Repeat
         final INoteRepeat noteRepeat = this.surface.getMidiInput ().getDefaultNoteInput ().getNoteRepeat ();
-        padGrid.light (87, noteRepeat.isActive () ? LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_LO);
+        padGrid.light(NOTE_REPEAT, noteRepeat.isActive() ? LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_ORCHID_LO);
 
         // Note Repeat period
         final int periodIndex = Resolution.getMatch (noteRepeat.getPeriod ());
-        padGrid.light (79, periodIndex == 0 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (71, periodIndex == 2 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (63, periodIndex == 4 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (55, periodIndex == 6 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 8, periodIndex == 0 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 16, periodIndex == 2 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 24, periodIndex == 4 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 32, periodIndex == 6 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
 
-        padGrid.light (80, periodIndex == 1 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (72, periodIndex == 3 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (64, periodIndex == 5 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (56, periodIndex == 7 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 7, periodIndex == 1 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 15, periodIndex == 3 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 23, periodIndex == 5 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 31, periodIndex == 7 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
 
         // Note Repeat length
         final int lengthIndex = Resolution.getMatch (noteRepeat.getNoteLength ());
-        padGrid.light (81, lengthIndex == 0 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (73, lengthIndex == 2 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (65, lengthIndex == 4 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
-        padGrid.light (57, lengthIndex == 6 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 6, lengthIndex == 0 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 14, lengthIndex == 2 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 22, lengthIndex == 4 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light(NOTE_REPEAT - 30, lengthIndex == 6 ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
 
-        padGrid.light (82, lengthIndex == 1 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (74, lengthIndex == 3 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (66, lengthIndex == 5 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
-        padGrid.light (58, lengthIndex == 7 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 5, lengthIndex == 1 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 13, lengthIndex == 3 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 21, lengthIndex == 5 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light(NOTE_REPEAT - 29, lengthIndex == 7 ? LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_PINK_LO);
 
         // Stop all
-        padGrid.light (51, LaunchpadColorManager.LAUNCHPAD_COLOR_RED);
+        padGrid.light(STOP, LaunchpadColorManager.LAUNCHPAD_COLOR_RED);
 
         if (this.surface.isPro ())
         {
@@ -116,68 +165,53 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
         }
 
         // Record
-        padGrid.light (44, transport.isRecording () ? LaunchpadColorManager.LAUNCHPAD_COLOR_RED_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_RED_LO);
-        padGrid.light (45, transport.isLauncherOverdub () ? LaunchpadColorManager.LAUNCHPAD_COLOR_ROSE : LaunchpadColorManager.LAUNCHPAD_COLOR_WHITE);
-
-        for (int i = 46; i < 51; i++)
-            padGrid.light (i, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light(RECORD, transport.isRecording() ? LaunchpadColorManager.LAUNCHPAD_COLOR_RED_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_RED_LO);
+        padGrid.light(CLIP_REC_AUTOMATION, transport.isWritingClipLauncherAutomation() ? LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_LO);
+        padGrid.light(ARR_REC_AUTOMATION, transport.isWritingArrangerAutomation() ? LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_LO);
+        padGrid.light(ARR_OVERDUB, transport.isArrangerOverdub() ? LaunchpadColorManager.LAUNCHPAD_COLOR_ROSE : LaunchpadColorManager.LAUNCHPAD_COLOR_RED_LO);
 
         // Play / New
-        padGrid.light (52, transport.isPlaying () ? LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_LO);
-        padGrid.light (53, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
-
-        padGrid.light (54, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
-        padGrid.light (59, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light(PLAY, transport.isPlaying() ? LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_LO);
+        padGrid.light(NEW, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
 
         // Duplicate
-        if (configuration.isDuplicateModeActive ())
-            padGrid.light (60, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE, LaunchpadColorManager.LAUNCHPAD_COLOR_OCEAN_BLUE, true);
-        else
-            padGrid.light (60, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE);
+        if (configuration.isDuplicateModeActive()) {
+            padGrid.light(DUPLICATE, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE, LaunchpadColorManager.LAUNCHPAD_COLOR_OCEAN_BLUE, true);
+        } else {
+            padGrid.light(DUPLICATE, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE);
+        }
         // Double
-        padGrid.light (61, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE_ORCHID);
-
-        padGrid.light (62, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
-        padGrid.light (67, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light(DOUBLE, LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE_ORCHID);
 
         // Quantize
-        padGrid.light (68, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN);
+        padGrid.light(QUANTIZE, LaunchpadColorManager.LAUNCHPAD_COLOR_LIME_GREEN);
         // Record Quantization
-        padGrid.light (69, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
-
-        padGrid.light (70, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
-        padGrid.light (75, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light(REC_QUANTIZE, getQuantizeColor());
 
         // Delete
-        if (configuration.isDeleteModeActive ())
-            padGrid.light (76, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA_PINK, true);
-        else
-            padGrid.light (76, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA);
-        padGrid.light (77, transport.isLoop () ? LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_BLUE_LO);
+        if (configuration.isDeleteModeActive()) {
+            padGrid.light(DELETE, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA_PINK, true);
+        } else {
+            padGrid.light(DELETE, LaunchpadColorManager.LAUNCHPAD_COLOR_MAGENTA);
+        }
+        padGrid.light(ARR_LOOP, transport.isLoop() ? LaunchpadColorManager.LAUNCHPAD_COLOR_LIME_GREEN : LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_HI);
 
-        padGrid.light (78, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
-        padGrid.light (83, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
 
         // Undo / Redo
-        padGrid.light (84, LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER);
-        padGrid.light (85, LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_YELLOW);
-
-        padGrid.light (86, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
-
-        for (int i = 88; i < 91; i++)
-            padGrid.light (i, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light(UNDO, LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER);
+        padGrid.light(REDO, LaunchpadColorManager.LAUNCHPAD_COLOR_AMBER_YELLOW);
 
         // Metronome
-        padGrid.light (92, transport.isMetronomeOn () ? LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_LO);
+        padGrid.light(METRONOME, transport.isMetronomeOn() ? LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColorManager.LAUNCHPAD_COLOR_SKY_LO);
         // Tap Tempo
-        padGrid.light (93, LaunchpadColorManager.LAUNCHPAD_COLOR_GREEN_SPRING);
+        padGrid.light(TAP_TEMPO, LaunchpadColorManager.LAUNCHPAD_COLOR_GREY_HALF);
 
-        for (int i = 94; i < 97; i++)
-            padGrid.light (i, LaunchpadColorManager.LAUNCHPAD_COLOR_BLACK);
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onGridNote (final int note, final int velocity)
     {
@@ -188,92 +222,92 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
 
         switch (note)
         {
-            case 36:
-            case 37:
-            case 38:
-            case 39:
-            case 40:
-            case 41:
-            case 42:
-            case 43:
-                final int newClipLength = note - 36;
+            case NEW_CLIP_LENGTH:
+            case NEW_CLIP_LENGTH + 1:
+            case NEW_CLIP_LENGTH + 2:
+            case NEW_CLIP_LENGTH + 3:
+            case NEW_CLIP_LENGTH + 4:
+            case NEW_CLIP_LENGTH + 5:
+            case NEW_CLIP_LENGTH + 6:
+            case NEW_CLIP_LENGTH + 7:
+                final int newClipLength = note - NEW_CLIP_LENGTH;
                 configuration.setNewClipLength (newClipLength);
                 this.surface.getDisplay ().notify ("New clip length: " + AbstractConfiguration.getNewClipLengthValue (newClipLength));
                 return;
 
-            case 51:
+            case STOP:
                 this.model.getCurrentTrackBank ().stop ();
-                this.surface.getDisplay ().notify ("Stop");
-                break;
+                this.surface.getDisplay().notify("Clip Stop");
+                return;
 
-            case 87:
+            case NOTE_REPEAT:
                 configuration.toggleNoteRepeatActive ();
                 this.mvHelper.delayDisplay ( () -> "Note Repeat: " + (configuration.isNoteRepeatActive () ? TAG_ACTIVE : "Off"));
                 return;
 
-            case 79:
+            case NOTE_REPEAT - 8:
                 this.setPeriod (0);
                 return;
-            case 80:
+            case NOTE_REPEAT - 7:
                 this.setPeriod (1);
                 return;
-            case 71:
+            case NOTE_REPEAT - 16:
                 this.setPeriod (2);
                 return;
-            case 72:
+            case NOTE_REPEAT - 15:
                 this.setPeriod (3);
                 return;
-            case 63:
+            case NOTE_REPEAT - 24:
                 this.setPeriod (4);
                 return;
-            case 64:
+            case NOTE_REPEAT - 23:
                 this.setPeriod (5);
                 return;
-            case 55:
+            case NOTE_REPEAT - 32:
                 this.setPeriod (6);
                 return;
-            case 56:
+            case NOTE_REPEAT - 31:
                 this.setPeriod (7);
                 return;
 
-            case 81:
+            case NOTE_REPEAT - 6:
                 this.setNoteLength (0);
                 return;
-            case 82:
+            case NOTE_REPEAT - 5:
                 this.setNoteLength (1);
                 return;
-            case 73:
+            case NOTE_REPEAT - 14:
                 this.setNoteLength (2);
                 return;
-            case 74:
+            case NOTE_REPEAT - 13:
                 this.setNoteLength (3);
                 return;
-            case 65:
+            case NOTE_REPEAT - 22:
                 this.setNoteLength (4);
                 return;
-            case 66:
+            case NOTE_REPEAT - 21:
                 this.setNoteLength (5);
                 return;
-            case 57:
+            case NOTE_REPEAT - 30:
                 this.setNoteLength (6);
                 return;
-            case 58:
+            case NOTE_REPEAT - 29:
                 this.setNoteLength (7);
                 return;
 
-            case 91:
+            case TOGGLE_ACCENT:
                 final boolean enabled = !configuration.isAccentActive ();
                 configuration.setAccentEnabled (enabled);
                 this.surface.getDisplay ().notify ("Fixed Accent: " + (enabled ? "On" : "Off"));
                 return;
 
-            case 97:
-                this.model.getTrackBank ().addChannel (ChannelType.INSTRUMENT);
+            case ADD_TRACK_INST:
+                this.model.getApplication().addInstrumentTrack();
                 return;
-            case 98:
-                this.model.getTrackBank ().addChannel (ChannelType.AUDIO);
+            case ADD_TRACK_AUDIO:
+                this.model.getApplication().addAudioTrack();
                 return;
-            case 99:
+            case ADD_TRACK_EFFECT:
                 this.model.getApplication ().addEffectTrack ();
                 return;
             default:
@@ -286,60 +320,67 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
 
         switch (note)
         {
-            case 92:
-                this.simulateButtonPress (ButtonID.METRONOME);
+            case METRONOME:
+                this.executeNormal(ButtonID.METRONOME, ButtonEvent.UP);
                 this.mvHelper.delayDisplay ( () -> "Metronome: " + (this.model.getTransport ().isMetronomeOn () ? "On" : "Off"));
                 break;
-            case 93:
-                this.simulateShiftedButtonPress (ButtonID.METRONOME);
+            case TAP_TEMPO:
+                this.executeShifted(ButtonID.METRONOME, ButtonEvent.UP);
                 this.surface.getDisplay ().notify ("Tap Tempo");
                 break;
-            case 84:
-                this.simulateButtonPress (ButtonID.UNDO);
+            case UNDO:
+                this.executeNormal(ButtonID.UNDO, ButtonEvent.UP);
                 this.surface.getDisplay ().notify ("Undo");
                 break;
-            case 85:
-                this.simulateShiftedButtonPress (ButtonID.UNDO);
+            case REDO:
+                this.executeShifted(ButtonID.UNDO, ButtonEvent.UP);
                 this.surface.getDisplay ().notify ("Redo");
                 break;
-            case 76:
+            case DELETE:
                 configuration.toggleDeleteModeActive ();
                 this.surface.getDisplay ().notify ("Delete " + (configuration.isDeleteModeActive () ? TAG_ACTIVE : "Off"));
                 break;
-            case 77:
-                this.simulateShiftedButtonPress (ButtonID.DELETE);
+            case ARR_LOOP:
+                this.executeShifted(ButtonID.DELETE, ButtonEvent.DOWN);
                 this.mvHelper.delayDisplay ( () -> "Arrangement Loop: " + (this.model.getTransport ().isLoop () ? "On" : "Off"));
                 break;
-            case 69:
-                this.simulateShiftedButtonPress (ButtonID.QUANTIZE);
+            case REC_QUANTIZE:
+                this.executeNormal(ButtonID.REC_QUANTIZE, ButtonEvent.DOWN);
                 break;
-            case 68:
-                this.simulateButtonPress (ButtonID.QUANTIZE);
+            case QUANTIZE:
+                this.executeNormal(ButtonID.QUANTIZE, ButtonEvent.DOWN);
                 this.surface.getDisplay ().notify ("Quantize");
                 break;
-            case 60:
+            case DUPLICATE:
                 configuration.toggleDuplicateModeActive ();
                 this.surface.getDisplay ().notify ("Duplicate " + (configuration.isDuplicateModeActive () ? TAG_ACTIVE : "Off"));
                 break;
-            case 61:
-                this.simulateShiftedButtonPress (ButtonID.DUPLICATE);
+            case DOUBLE:
+                this.executeShifted(ButtonID.DUPLICATE, ButtonEvent.DOWN);
                 this.surface.getDisplay ().notify ("Double");
                 break;
-            case 52:
-                this.simulateButtonPress (ButtonID.PLAY);
+            case PLAY:
+                this.executeNormal(ButtonID.PLAY, ButtonEvent.DOWN);
                 this.surface.getDisplay ().notify ("Play");
                 break;
-            case 53:
-                this.simulateShiftedButtonPress (ButtonID.PLAY);
+            case NEW:
+                this.executeShifted(ButtonID.NEW, ButtonEvent.DOWN);
                 this.surface.getDisplay ().notify ("New");
                 break;
-            case 44:
-                this.simulateButtonPress (ButtonID.RECORD);
+            case RECORD:
+                this.executeNormal(ButtonID.RECORD, ButtonEvent.UP);
                 this.surface.getDisplay ().notify ("Arranger record");
                 break;
-            case 45:
-                this.simulateShiftedButtonPress (ButtonID.RECORD);
-                this.mvHelper.delayDisplay ( () -> "Overdub launcher clips: " + (this.model.getTransport ().isLauncherOverdub () ? "On" : "Off"));
+            case ARR_OVERDUB:
+                this.executeNormal(ButtonID.ARR_OVERDUB, ButtonEvent.UP);
+                break;
+
+            case CLIP_REC_AUTOMATION:
+                this.executeNormal(ButtonID.CLIP_REC_AUTOMATION, ButtonEvent.UP);
+                break;
+
+            case ARR_REC_AUTOMATION:
+                this.executeNormal(ButtonID.ARR_REC_AUTOMATION, ButtonEvent.UP);
                 break;
             default:
                 // Not used
@@ -435,4 +476,35 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
         this.surface.getConfiguration ().setNoteRepeatLength (Resolution.values ()[index]);
         this.surface.scheduleTask ( () -> this.surface.getDisplay ().notify ("Note Length: " + Resolution.getNameAt (index)), 100);
     }
+
+
+    private void executeNormal(final ButtonID buttonID, final ButtonEvent event) {
+        simulateButtonPress(buttonID);
+    }
+
+
+    private void executeShifted(final ButtonID buttonID, final ButtonEvent event) {
+        simulateShiftedButtonPress(buttonID);
+    }
+
+    private int getQuantizeColor() {
+
+        int defaultColor = LaunchpadColorManager.LAUNCHPAD_COLOR_TURQUOISE_HI;
+        final ITrack cursorTrack = this.model.getCursorTrack();
+        if (!cursorTrack.doesExist())
+            return defaultColor - 5;
+
+        final RecordQuantization[] values = RecordQuantization.values();
+        final RecordQuantization recordQuantization = cursorTrack.getRecordQuantizationGrid();
+        int index = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (recordQuantization == values[i]) {
+                index = i;
+                break;
+            }
+        }
+        return defaultColor - index;
+    }
+
+
 }

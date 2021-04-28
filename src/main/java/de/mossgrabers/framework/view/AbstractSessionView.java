@@ -99,15 +99,17 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
      */
     protected void handleSceneButtonCombinations (final IScene scene)
     {
-        if (this.isButtonCombination (ButtonID.DELETE))
+        if (this.isDeleteButtonCombination())
         {
             scene.remove ();
             return;
         }
 
-        if (this.isButtonCombination (ButtonID.DUPLICATE))
+        if (this.isDuplicateButtonCombination ())
         {
-            scene.duplicate ();
+            scene.select();;
+            model.getApplication().duplicate();
+            //scene.duplicate ();
             return;
         }
 
@@ -210,7 +212,7 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
             return true;
 
         // Delete selected clip
-        if (this.isButtonCombination (ButtonID.DELETE))
+        if (this.isDeleteButtonCombination ())
         {
             if (slot.doesExist ())
                 slot.remove ();
@@ -218,7 +220,7 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
         }
 
         // Duplicate a clip
-        if (this.isButtonCombination (ButtonID.DUPLICATE))
+        if (this.isDuplicateButtonCombination ())
         {
             if (slot.doesExist () && slot.hasContent ())
                 this.sourceSlot = slot;
@@ -478,5 +480,16 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
         final int s = this.rows - 1 - index / this.columns;
         final C configuration = this.surface.getConfiguration ();
         return configuration.isFlipSession () ? new Pair<> (Integer.valueOf (s), Integer.valueOf (t)) : new Pair<> (Integer.valueOf (t), Integer.valueOf (s));
+    }
+
+    protected boolean isDeleteButtonCombination() {
+        return this.isButtonCombination (ButtonID.DELETE);
+    }
+
+    protected boolean isaButtonIdDelete(ButtonID buttonID) {
+        return  buttonID == ButtonID.DELETE;
+    }
+    protected boolean isDuplicateButtonCombination() {
+        return this.isButtonCombination (ButtonID.DUPLICATE) ;
     }
 }

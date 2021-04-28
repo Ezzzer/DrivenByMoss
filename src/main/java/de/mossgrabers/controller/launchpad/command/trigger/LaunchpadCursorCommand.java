@@ -167,8 +167,8 @@ public class LaunchpadCursorCommand extends CursorCommand<LaunchpadControlSurfac
                 this.canScrollLeft = selIndex > 0 || tb.canScrollPageBackwards ();
                 this.canScrollRight = selIndex >= 0 && selIndex < 7 && tb.getItem (selIndex + 1).doesExist () || tb.canScrollPageForwards ();
                 final ISceneBank sceneBank = tb.getSceneBank ();
-                this.canScrollUp = sceneBank.canScrollPageBackwards ();
-                this.canScrollDown = sceneBank.canScrollPageForwards ();
+                this.canScrollUp = sceneBank.canScrollBackwards ();
+                this.canScrollDown = sceneBank.canScrollForwards ();
                 break;
 
             case SHUFFLE:
@@ -248,8 +248,11 @@ public class LaunchpadCursorCommand extends CursorCommand<LaunchpadControlSurfac
                 final SessionView sessionView = (SessionView) this.surface.getViewManager ().get (Views.SESSION);
                 if (sessionView.isBirdsEyeActive ())
                     volumeMode.selectPreviousItemPage ();
-                else
-                    volumeMode.selectPreviousItem ();
+                else {
+                    model.getApplication().arrowKeyLeft();
+
+                    // ezer    volumeMode.selectPreviousItem();
+                }
                 this.mvHelper.notifySelectedTrack ();
                 break;
 
@@ -344,8 +347,10 @@ public class LaunchpadCursorCommand extends CursorCommand<LaunchpadControlSurfac
                 final SessionView sessionView = (SessionView) this.surface.getViewManager ().get (Views.SESSION);
                 if (sessionView.isBirdsEyeActive ())
                     volumeMode.selectNextItemPage ();
-                else
-                    volumeMode.selectNextItem ();
+                else {
+                    model.getApplication().arrowKeyRight();
+                    // ezer volumeMode.selectNextItem();
+                }
                 this.mvHelper.notifySelectedTrack ();
                 break;
 
@@ -422,8 +427,10 @@ public class LaunchpadCursorCommand extends CursorCommand<LaunchpadControlSurfac
                 final SessionView sessionView = (SessionView) this.surface.getViewManager ().get (Views.SESSION);
                 if (sessionView.isBirdsEyeActive ())
                     this.getSceneBank ().selectPreviousPage ();
-                else
-                    super.scrollUp ();
+                else {
+                    model.getApplication().arrowKeyUp();
+                    // ezer super.scrollUp();
+                }
                 break;
 
             case TRACK_VOLUME:
@@ -497,8 +504,10 @@ public class LaunchpadCursorCommand extends CursorCommand<LaunchpadControlSurfac
                 final SessionView sessionView = (SessionView) this.surface.getViewManager ().get (Views.SESSION);
                 if (sessionView.isBirdsEyeActive ())
                     this.getSceneBank ().selectNextPage ();
-                else
-                    super.scrollDown ();
+                else{
+                    model.getApplication().arrowKeyDown();
+// ezer                    super.scrollDown ();
+                }
                 break;
 
             case TRACK_VOLUME:

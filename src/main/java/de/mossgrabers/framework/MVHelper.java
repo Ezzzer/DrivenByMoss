@@ -131,14 +131,11 @@ public class MVHelper<S extends IControlSurface<C>, C extends Configuration>
      *
      * @param mode The mode
      */
-    public void notifySelectedItem (final IMode mode)
-    {
-        this.delayDisplay ( () -> {
-
+    public void notifySelectedItem(final IMode mode) {
             final Optional<String> selectedItemName = mode.getSelectedItemName ();
-            return selectedItemName.isPresent () ? selectedItemName.get () : NONE;
-
-        });
+        if (selectedItemName.isPresent()) {
+            this.delayDisplay(selectedItemName::get);
+        }
     }
 
 

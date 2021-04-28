@@ -84,7 +84,13 @@ public enum LaunchpadButton
     /** The Scene 7 button. */
     SCENE7,
     /** The Scene 8 button. */
-    SCENE8;
+    SCENE8,
+    STOP_ARR,
+    CLIP_REC_AUTOMATION,
+    ARR_REC_AUTOMATION,
+    REC_QUANTIZE,
+    NEW,
+    ARR_OVERDUB;
 
 
     /** All scene buttons. */

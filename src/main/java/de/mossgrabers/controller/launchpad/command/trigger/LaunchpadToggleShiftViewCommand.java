@@ -19,35 +19,66 @@ import de.mossgrabers.framework.view.Views;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class LaunchpadToggleShiftViewCommand extends ToggleShiftViewCommand<LaunchpadControlSurface, LaunchpadConfiguration>
-{
+public class LaunchpadToggleShiftViewCommand extends ToggleShiftViewCommand<LaunchpadControlSurface, LaunchpadConfiguration> {
     /**
      * Constructor.
      *
-     * @param model The model
+     * @param model   The model
      * @param surface The surface
      */
-    public LaunchpadToggleShiftViewCommand (final IModel model, final LaunchpadControlSurface surface)
-    {
-        super (model, surface);
+    public LaunchpadToggleShiftViewCommand(final IModel model, final LaunchpadControlSurface surface) {
+        super(model, surface);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    static long lastClick;
+    final int shiftDelayTime = 100; // the time we give for rec_arm activation, otherwise the shift view will display
 
-    /** {@inheritDoc} */
     @Override
-    public void execute (final ButtonEvent event, final int velocity)
-    {
-        if (event == ButtonEvent.LONG)
-            return;
+    public void execute(final ButtonEvent event, final int velocity) {
 
-        final ViewManager viewManager = this.surface.getViewManager ();
-        if (event == ButtonEvent.DOWN && (viewManager.isActive (Views.TEMPO) || viewManager.isActive (Views.SHUFFLE)))
-        {
-            viewManager.restore ();
-            this.surface.setTriggerConsumed (ButtonID.SHIFT);
-            return;
+        final ViewManager viewManager = this.surface.getViewManager();
+        fastClick(event, viewManager);
+
+
+        if (event == ButtonEvent.UP && viewManager.isActive(Views.SHIFT)) {
+            if (surface.getConfiguration().isDuplicateModeActive() || surface.getConfiguration().isDeleteModeActive()) {
+                viewManager.setActive(Views.SESSION);// ezer activate session view, there is nothing todo in other views
+            }else {
+                viewManager.restore();
+            }
+        }
+        this.surface.setKnobSensitivityIsSlow(this.surface.isShiftPressed());
+    }
+
+    protected void fastClick(ButtonEvent event, ViewManager viewManager) {
+        if (event == ButtonEvent.DOWN && !viewManager.isActive(Views.SHIFT)) {
+            lastClick = System.currentTimeMillis();
+            surface.scheduleTask(() -> {
+                if (restoreFromTempoAndShuffle(event, viewManager)) return;
+                exitOrEnterShiftView(event, viewManager);
+            }, shiftDelayTime);
+
+        } else if (event == ButtonEvent.UP && (!surface.isLongPressed(ButtonID.SHIFT))) {
+            if (System.currentTimeMillis() - lastClick < shiftDelayTime) {
+                this.model.getTransport().toggleLauncherOverdub();
+                this.mvHelper.delayDisplay(() -> "Clip Overdub: " + (this.model.getTransport().isLauncherOverdub() ? "On" : "Off"));
+            }
+        }
+    }
+
+    private boolean restoreFromTempoAndShuffle(ButtonEvent event, ViewManager viewManager) {
+        if (event == ButtonEvent.LONG) {
+            return true;
         }
 
-        super.execute (event, velocity);
+        if (event == ButtonEvent.DOWN && (viewManager.isActive(Views.TEMPO) || viewManager.isActive(Views.SHUFFLE))) {
+            viewManager.restore();
+            this.surface.setTriggerConsumed(ButtonID.SHIFT);
+            return true;
+        }
+        return false;
     }
 }
